@@ -971,39 +971,70 @@
                         else filter = filter.toLowerCase();
 
                         _data.rows = $.map(_data.rows, function (row) {
+                            var val = $('<div>').html(String(row[col])).text();
+                            var valHtml = String(row[col]);
 
-                            var val = String(row[col]);
                             row[col + 'AutoFormat'] = '';
+                            if (val === valHtml) {
+                                if (regex && validRegex) {
+                                    var matches = val.match(filter);
 
-                            if (regex && validRegex) {
-                                var matches = val.match(filter);
-                                if (!matches && ne) return row;
+                                    if (!matches && ne) {
+                                        return row;
+                                    }
 
-                                if (matches && !ne) {
-                                    var pos = 0;
-                                    $.each(matches, function(index, match) {
-                                        var matchMask = '<span class="filter">{0}</span>'.f(match);
-                                        pos = val.indexOf(match, pos);
+                                    if (matches && !ne) {
+                                        var pos = 0;
+
+                                        $.each(matches, function (index, match) {
+                                            var matchMask = '<span class="filter">{0}</span>'.f(match);
+                                            pos = val.indexOf(match, pos);
+                                            var pre = val.substring(0, pos);
+                                            var post = val.substring(pos + match.length);
+                                            val = '{0}{1}{2}'.f(pre, matchMask, post);
+                                            pos += matchMask.length;
+                                        });
+                                        row[col + 'AutoFormat'] = val;
+
+                                        return row;
+                                    }
+                                } else {
+                                    var pos = val.toLowerCase().indexOf(filter);
+
+                                    if ((pos == -1 && ne) || filter === '') {
+                                        return row;
+                                    } else if (row[col] != undefined && pos >= 0 && !ne) {
                                         var pre = val.substring(0, pos);
-                                        var post = val.substring(pos + match.length);
-                                        val = '{0}{1}{2}'.f(pre, matchMask, post);
-                                        pos += matchMask.length;
-                                    });
-                                    row[col + 'AutoFormat'] = val;
-                                    return row;
-                                }
-                            }
-                            else {
-                                var pos = val.toLowerCase().indexOf(filter);
+                                        var match = val.substring(pos, pos + filter.length);
+                                        var post = val.substring(pos + filter.length, row[col].length);
 
-                                if ((pos == -1 && ne) || filter === '') return row;
-                                else if (row[col] != undefined && pos >= 0 && !ne) {
-                                    var pre = val.substring(0, pos);
-                                    var match = val.substring(pos, pos + filter.length);
-                                    var post = val.substring(pos + filter.length, row[col].length);
-                                    val = '{0}<span class="filter">{1}</span>{2}'.f(pre, match, post);
-                                    row[col + 'AutoFormat'] = val;
-                                    return row;
+                                        val = '{0}<span class="filter">{1}</span>{2}'.f(pre, match, post);
+                                        row[col + 'AutoFormat'] = val;
+
+                                        return row;
+                                    }
+                                }
+                            } else {
+                                if (regex && validRegex) {
+                                    var matches = val.match(filter);
+
+                                    if (!matches && ne) {
+                                        return row;
+                                    } else if (matches && !ne) {
+                                        row[col + 'AutoFormat'] = valHtml;
+
+                                        return row;
+                                    }
+                                } else {
+                                    var pos = val.toLowerCase().indexOf(filter);
+
+                                    if ((pos == -1 && ne) || filter === '') {
+                                        return row;
+                                    } else if (row[col] != undefined && pos >= 0 && !ne) {
+                                        row[col + 'AutoFormat'] = valHtml;
+
+                                        return row;
+                                    }
                                 }
                             }
                         });

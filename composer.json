@@ -1,0 +1,19 @@
+{
+  "name": "chejam/watable",
+  "description": "A jQuery table plugin with sorting, paging, filtering.",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andreas Petersson",
+      "email": "apesv03@gmail.com"
+    },
+    {
+      "name": "Sergey Shugaev",
+      "email": "sergey.shugaev@click2mice.com"
+    }
+  ],
+  "require": {
+    "bower-asset/jquery": "^3.2@stable"
+  }
+}
